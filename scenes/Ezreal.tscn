@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://co2qqjgfpj0sr"]
+
+[ext_resource type="Script" uid="uid://bxnf0dlngb3ij" path="res://scripts/ezreal_player.gd" id="1_ezreal"]
+[ext_resource type="PackedScene" uid="uid://bkv550vk6aeqv" path="res://assets/Ezreal/model/source/EzrealComplete.glb" id="2_g6gem"]
+[ext_resource type="Script" uid="uid://facrs4o1krxo" path="res://scripts/ezreal_skill_manager.gd" id="2_skill"]
+[ext_resource type="Script" uid="uid://6l5inepble3k" path="res://scripts/camera_controller.gd" id="3_camera"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ezreal"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_g6gem"]
+height = 4.0
+radius = 1.0
+
+[node name="Ezreal" type="CharacterBody3D" unique_id=130365875 groups=["player"]]
+script = ExtResource("1_ezreal")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=752368996]
+shape = SubResource("CapsuleShape3D_ezreal")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=953045814]
+avoidance_enabled = true
+height = 1.8
+radius = 0.4
+
+[node name="Visuals" type="Node3D" parent="." unique_id=143505055]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, -0.5, 0)
+
+[node name="SkinnedMesh" parent="Visuals" unique_id=584728678 instance=ExtResource("2_g6gem")]
+
+[node name="EzrealSkillManager" type="Node3D" parent="." unique_id=497584546]
+script = ExtResource("2_skill")
+
+[node name="DetectionZone" type="Area3D" parent="EzrealSkillManager" unique_id=1290590066]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EzrealSkillManager/DetectionZone" unique_id=747641967]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_g6gem")
+
+[node name="CameraPivot" type="Camera3D" parent="." unique_id=1848620652]
+script = ExtResource("3_camera")

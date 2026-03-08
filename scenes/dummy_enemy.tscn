@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://n7rm6r43fsqv"]
+
+[ext_resource type="Script" uid="uid://du58nd8f68aes" path="res://scripts/dummy_enemy.gd" id="1_dummy"]
+[ext_resource type="PackedScene" uid="uid://xqie1mot7gyk" path="res://assets/Minion/model/source/AlistarComplete.glb" id="2_thcns"]
+[ext_resource type="Script" path="res://scripts/dummy_enemy_skill_manager.gd" id="3_dummy_skill"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_thcns"]
+height = 3.5
+radius = 2.0
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_dummy"]
+radius = 0.55
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dummy"]
+albedo_color = Color(0.8, 0.2, 0.2, 1)
+roughness = 0.8
+
+[node name="DummyEnemy" type="StaticBody3D" unique_id=1547740252 groups=["enemy"]]
+collision_layer = 2
+script = ExtResource("1_dummy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1382818254]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("CylinderShape3D_thcns")
+
+[node name="Visual" type="MeshInstance3D" parent="." unique_id=890075979]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, -0.5, 0)
+mesh = SubResource("CapsuleMesh_dummy")
+surface_material_override/0 = SubResource("StandardMaterial3D_dummy")
+
+[node name="SkinnedMesh" parent="Visual" unique_id=170144735 instance=ExtResource("2_thcns")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03280449, 0.1252594, -0.060043335)
+
+[node name="DummyEnemySkillManager" type="Node3D" parent="."]
+script = ExtResource("3_dummy_skill")

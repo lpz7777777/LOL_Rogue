@@ -1,0 +1,141 @@
+[gd_scene format=3 uid="uid://b5fsjkfl0beid"]
+
+[ext_resource type="Script" uid="uid://noly8u4ia73u" path="res://scripts/main.gd" id="1_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://c236cbmchpa8y" path="res://assets/environment/realtime_grass_3.png" id="2_tbgi4"]
+[ext_resource type="PackedScene" uid="uid://n7rm6r43fsqv" path="res://scenes/dummy_enemy.tscn" id="5_dummy_enemy"]
+[ext_resource type="Script" uid="uid://et0n4sy6s2km" path="res://scripts/hud.gd" id="6_hud"]
+[ext_resource type="Script" uid="uid://dl56yrurng73m" path="res://scripts/enemy_manager.gd" id="7_o6xl0"]
+[ext_resource type="PackedScene" uid="uid://b03kx0wl6m5hn" path="res://assets/environment/tree_animate.glb" id="10_tree_anim"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_0wfyh"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_sugp2"]
+sky_material = SubResource("ProceduralSkyMaterial_0wfyh")
+
+[sub_resource type="Environment" id="Environment_jyhfs"]
+background_mode = 2
+sky = SubResource("Sky_sugp2")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_0wfyh"]
+vertices = PackedVector3Array(-149.5, 0.5, -149.5, -149.5, 0.5, 149.5, 149.5, 0.5, 149.5, 149.5, 0.5, -149.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jyhfs"]
+albedo_texture = ExtResource("2_tbgi4")
+uv1_scale = Vector3(40, 40, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+material = SubResource("StandardMaterial3D_jyhfs")
+size = Vector3(300, 1, 300)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(300, 1, 300)
+
+[node name="Main" type="Node3D" unique_id=1564570270]
+script = ExtResource("1_tbgi4")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=971891326]
+environment = SubResource("Environment_jyhfs")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1430569020]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=1016361504]
+navigation_mesh = SubResource("NavigationMesh_0wfyh")
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D" unique_id=827081395]
+collision_mask = 0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NavigationRegion3D/Ground" unique_id=805049672]
+mesh = SubResource("BoxMesh_ground")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground" unique_id=516847716]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_ground")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=53326076]
+script = ExtResource("6_hud")
+
+[node name="Enemies" type="Node3D" parent="." unique_id=1943949685]
+
+[node name="DummyEnemy1" parent="Enemies" unique_id=1040110580 instance=ExtResource("5_dummy_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 0)
+
+[node name="DummyEnemy2" parent="Enemies" unique_id=1460231444 instance=ExtResource("5_dummy_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 0)
+
+[node name="DummyEnemy3" parent="Enemies" unique_id=1854648925 instance=ExtResource("5_dummy_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8)
+
+[node name="DummyEnemy4" parent="Enemies" unique_id=123516955 instance=ExtResource("5_dummy_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -8)
+
+[node name="EnemyManager" type="Node3D" parent="." unique_id=2089760171]
+script = ExtResource("7_o6xl0")
+
+[node name="Trees" type="Node3D" parent="." unique_id=1909249082]
+
+[node name="Tree1" parent="Trees" unique_id=193001387 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.31011257, 0, 0.112828195, 0, 0.22, 0, -0.112828195, 0, 0.31011257, -87.488754, 0, 72)
+
+[node name="Tree2" parent="Trees" unique_id=1003129998 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.20784457, 0, 0.12000264, 0, 0.16, 0, -0.12000264, 0, 0.20784457, 115, 0, -85)
+
+[node name="Tree3" parent="Trees" unique_id=195759170 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.19091883, 0, -0.19091883, 0, 0.18, 0, 0.19091883, 0, 0.19091883, -67, 0, -112)
+
+[node name="Tree4" parent="Trees" unique_id=1411213950 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.16500363, 0, 0.2857863, 0, 0.22, 0, -0.2857863, 0, -0.16500363, -0.3751831, 0, 86.73047)
+
+[node name="Tree5" parent="Trees" unique_id=1030342405 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.0776423, 0, 0.28977868, 0, 0.2, 0, -0.28977868, 0, 0.0776423, -118, 0, -38)
+
+[node name="Tree6" parent="Trees" unique_id=842690146 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.31176686, 0, -0.18000396, 0, 0.24, 0, 0.18000396, 0, -0.31176686, 88, 0, -52)
+
+[node name="Tree7" parent="Trees" unique_id=1091735403 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.16970561, 0, 0.16970561, 0, 0.16, 0, -0.16970561, 0, -0.16970561, 11.985565, 0, -95)
+
+[node name="Tree8" parent="Trees" unique_id=1993756662 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.09231399, 0, -0.25372845, 0, 0.18, 0, 0.25372845, 0, 0.09231399, 128, 0, 58)
+
+[node name="Tree9" parent="Trees" unique_id=1310042915 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.23182292, 0, -0.06211385, 0, 0.16, 0, 0.06211385, 0, 0.23182292, -60.892857, 0, 118)
+
+[node name="Tree10" parent="Trees" unique_id=1287791715 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.09317079, 0, -0.3477344, 0, 0.24, 0, 0.3477344, 0, -0.09317079, 61.075012, 0, -65.28929)
+
+[node name="Tree11" parent="Trees" unique_id=1714732379 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.1128282, 0, 0.31011257, 0, 0.22, 0, -0.31011257, 0, -0.1128282, -59.67649, 0, 45)
+
+[node name="Tree12" parent="Trees" unique_id=1158723035 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.15000331, 0, 0.25980574, 0, 0.2, 0, -0.25980574, 0, 0.15000331, 75, 0, 92)
+
+[node name="Tree13" parent="Trees" unique_id=996633720 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.23382516, 0, -0.13500299, 0, 0.18, 0, 0.13500299, 0, 0.23382516, -25, 0, 18)
+
+[node name="Tree14" parent="Trees" unique_id=485495355 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.16970561, 0, 0.16970561, 0, 0.16, 0, -0.16970561, 0, -0.16970561, 32, 0, -28)
+
+[node name="Tree15" parent="Trees" unique_id=348779938 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.16500364, 0, -0.2857863, 0, 0.22, 0, 0.2857863, 0, 0.16500364, -15, 0, -35)
+
+[node name="Tree16" parent="Trees" unique_id=1771230460 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.10257109, 0, 0.28192052, 0, 0.2, 0, -0.28192052, 0, -0.10257109, 70.94279, 0, 22)
+
+[node name="Tree17" parent="Trees" unique_id=630472134 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.3477344, 0, 0.093170784, 0, 0.24, 0, -0.093170784, 0, 0.3477344, -38, 0, -18)
+
+[node name="Tree18" parent="Trees" unique_id=171980073 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.20784457, 0, 0.12000263, 0, 0.16, 0, -0.12000263, 0, -0.20784457, 22, 0, 40)
+
+[node name="Tree19" parent="Trees" unique_id=1794736424 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(0.09231399, 0, 0.25372845, 0, 0.18, 0, -0.25372845, 0, 0.09231399, 8, 0, 13.55814)
+
+[node name="Tree20" parent="Trees" unique_id=1777620832 instance=ExtResource("10_tree_anim")]
+transform = Transform3D(-0.1500033, 0, -0.25980574, 0, 0.2, 0, 0.25980574, 0, -0.1500033, -42, 0, 8)

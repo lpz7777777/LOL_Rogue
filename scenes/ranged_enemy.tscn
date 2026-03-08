@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://b5vi5ysux282i"]
+
+[ext_resource type="Script" uid="uid://bci4avdpgf2ln" path="res://scripts/ranged_enemy.gd" id="1_ranged"]
+[ext_resource type="PackedScene" uid="uid://cbmouleuq8vt0" path="res://assets/Jhin/model/source/JhinComplete.glb" id="2_32iyl"]
+[ext_resource type="Script" uid="uid://cs80wvbugicr2" path="res://scripts/ranged_enemy_skill_manager.gd" id="2_skill"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_32iyl"]
+height = 4.5
+radius = 1.2
+
+[node name="RangedEnemy" type="CharacterBody3D" unique_id=427259588]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_ranged")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=585700274]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("CylinderShape3D_32iyl")
+
+[node name="Visual" type="Node3D" parent="." unique_id=467887597]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, -0.5, 0)
+
+[node name="SkinnedMesh" parent="Visual" unique_id=363409068 instance=ExtResource("2_32iyl")]
+
+[node name="RangedEnemySkillManager" type="Node3D" parent="." unique_id=249815522]
+script = ExtResource("2_skill")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1021579087]

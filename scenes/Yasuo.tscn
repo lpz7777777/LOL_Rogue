@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://dm3nil30getyq"]
+
+[ext_resource type="Script" uid="uid://dsybvhb0bef8f" path="res://scripts/yasuo_player.gd" id="1_yasuo"]
+[ext_resource type="Script" uid="uid://dat5ciyuk3qdb" path="res://scripts/yasuo_skill_manager.gd" id="2_skill"]
+[ext_resource type="Script" uid="uid://6l5inepble3k" path="res://scripts/camera_controller.gd" id="3_camera"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yasuo"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.35
+height = 1.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.3
+height = 0.5
+
+[sub_resource type="SphereMesh" id="SphereMesh_eye"]
+radius = 0.06
+height = 0.1
+
+[sub_resource type="SphereMesh" id="SphereMesh_nose"]
+radius = 0.04
+height = 0.08
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_det"]
+radius = 10.0
+
+[node name="Yasuo" type="CharacterBody3D" unique_id=1249203240 groups=["player"]]
+script = ExtResource("1_yasuo")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=485106271]
+shape = SubResource("CapsuleShape3D_yasuo")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1487280885]
+avoidance_enabled = true
+height = 1.8
+radius = 0.4
+
+[node name="Visuals" type="Node3D" parent="." unique_id=1006013885]
+
+[node name="Body" type="MeshInstance3D" parent="Visuals" unique_id=1317301369]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="Head" type="MeshInstance3D" parent="Visuals" unique_id=69954410]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.35, 0)
+mesh = SubResource("SphereMesh_head")
+
+[node name="FaceDirection" type="Node3D" parent="Visuals/Head" unique_id=583140729]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.28)
+
+[node name="LeftEye" type="MeshInstance3D" parent="Visuals/Head/FaceDirection" unique_id=1950302967]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12, 0.08, 0)
+mesh = SubResource("SphereMesh_eye")
+
+[node name="RightEye" type="MeshInstance3D" parent="Visuals/Head/FaceDirection" unique_id=867048717]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.12, 0.08, 0)
+mesh = SubResource("SphereMesh_eye")
+
+[node name="Nose" type="MeshInstance3D" parent="Visuals/Head/FaceDirection" unique_id=353387468]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.2)
+mesh = SubResource("SphereMesh_nose")
+
+[node name="YasuoSkillManager" type="Node3D" parent="." unique_id=815813267]
+script = ExtResource("2_skill")
+
+[node name="DetectionZone" type="Area3D" parent="YasuoSkillManager" unique_id=1434046990]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="YasuoSkillManager/DetectionZone" unique_id=394369792]
+shape = SubResource("SphereShape3D_det")
+
+[node name="CameraPivot" type="Camera3D" parent="."]
+# 初始位置可以随便写，因为脚本 _physics_process 会每帧覆盖它
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 15, 10)
+script = ExtResource("3_camera")

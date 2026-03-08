@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://blawiog21ijan"]
+
+[ext_resource type="Script" uid="uid://cvcaomfww76a6" path="res://scripts/chaser_enemy.gd" id="1_chaser"]
+[ext_resource type="PackedScene" uid="uid://xqie1mot7gyk" path="res://assets/Minion/model/source/AlistarComplete.glb" id="2_model"]
+[ext_resource type="Script" path="res://scripts/chaser_enemy_skill_manager.gd" id="3_skill"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_5k2po"]
+height = 3.5
+radius = 2.0
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_detect"]
+radius = 1.0
+
+[node name="ChaserEnemy" type="CharacterBody3D" unique_id=835691551 groups=["enemy"]]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_chaser")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1784269758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("CylinderShape3D_5k2po")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1971544519]
+
+[node name="Visual" type="Node3D" parent="." unique_id=1529156097]
+transform = Transform3D(0.02, 0, 0, 0, 0.02, 0, 0, 0, 0.02, 0, -0.5, 0)
+
+[node name="SkinnedMesh" parent="Visual" unique_id=723880399 instance=ExtResource("2_model")]
+
+[node name="DetectionArea" type="Area3D" parent="." unique_id=360341013]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DetectionArea" unique_id=2116470889]
+shape = SubResource("SphereShape3D_detect")
+
+[node name="ChaserEnemySkillManager" type="Node3D" parent="."]
+script = ExtResource("3_skill")

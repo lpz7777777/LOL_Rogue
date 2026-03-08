@@ -25,6 +25,7 @@ class_name RangedEnemy
 @export var health_bar_border_color: Color = Color(0.0, 0.0, 0.0, 1.0)
 
 @export var exp_reward: float = 30.0
+@export var gold_reward: int = 25  # 击杀奖励金币
 
 @export_group("Animation")
 @export var anim_idle: String = "jhin_run01_anm"
@@ -445,6 +446,7 @@ func die() -> void:
 		return
 	_is_dead = true
 	Global.increment_kill_count()
+	PlayerInventory.add_gold(gold_reward)
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0 and players[0].has_method("add_experience"):
 		players[0].add_experience(exp_reward)

@@ -314,6 +314,7 @@ func _trigger_hit_flash() -> void:
 
 
 @export var exp_reward: float = 25.0
+@export var gold_reward: int = 15  # 击杀奖励金币
 
 func die() -> void:
 	if _is_dead:
@@ -321,6 +322,7 @@ func die() -> void:
 	_is_dead = true
 	print("[", name, "] ChaserEnemy died!")
 	Global.increment_kill_count()
+	PlayerInventory.add_gold(gold_reward)
 	var players = get_tree().get_nodes_in_group("player")
 	if players.size() > 0 and players[0].has_method("add_experience"):
 		players[0].add_experience(exp_reward)

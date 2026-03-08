@@ -35,7 +35,8 @@ static func apply(p: Node, skill_manager: Node, hex_id: String) -> void:
 		"hex_vitality":
 			if p:
 				p.max_health += 200
-				p.current_health = min(p.current_health + 200, p.max_health)
+				var eff_max = p.max_health + PlayerInventory.get_bonus_max_health()
+				p.current_health = min(p.current_health + 200, eff_max)
 				_add_hex_warmog(p)
 		"hex_alacrity":
 			if skill_manager and skill_manager.get("ability_haste") != null:

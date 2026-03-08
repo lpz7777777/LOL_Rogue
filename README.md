@@ -13,6 +13,10 @@
   Built with Godot 4 · Inspired by League of Legends
 </p>
 
+<p align="center">
+  <sub>🛠️ Developed with <a href="https://cursor.com">Cursor</a></sub>
+</p>
+
 ---
 
 ## 📸 Screenshots | 截图
@@ -55,6 +59,7 @@
 |---------|------|------|
 | **Dual Heroes** | 双英雄 | Ezreal（远程）· Yasuo（近战） |
 | **Enemy Types** | 敌人类型 | 近战追击（牛头）、远程射击（烬）、木桩 |
+| **Gold & Shop** | 金币与商店 | 击杀获得金币 · **P** 键打开 LOL 风格商店 · 购买装备加成 |
 | **Level-up** | 升级强化 | AD、AP、生命、技能极速等 |
 | **Hextech** | 海克斯强化 | 每 5 级解锁，回旋镖、狂徒等 |
 | **Game Modes** | 游戏模式 | 练习模式 · 单人波次生存 |
@@ -65,6 +70,7 @@
 
 - **Ezreal**: 平 A + Q/W/E/R 技能，神秘射击、精华涌流、奥术跃迁、精准弹幕
 - **Yasuo**: 斩钢闪、旋风烈斩、踏前斩、狂风绝息斩
+- **金币与商店**：击杀敌人获得金币（不同敌人不同金额），按 **P** 键打开商店，购买装备并加成至英雄
 - 击杀敌人获得经验，升级后选择强化或海克斯
 - 海克斯回旋镖：周期性发射，飞出后追着英雄返回，路径上造成伤害
 
@@ -100,6 +106,7 @@ LOL_Rogue/
 │   ├── Yasuo/           # 亚索素材
 │   ├── Alistar/         # 近战敌人（牛头）模型
 │   ├── Jhin/            # 远程敌人（烬）模型
+│   ├── shop/            # 商店装备图标
 │   ├── levelup/         # 升级 UI、海克斯背景与回旋镖
 │   └── environment/     # 地形、树木等
 ├── scenes/              # 场景
@@ -108,6 +115,9 @@ LOL_Rogue/
 │   ├── Ezreal.tscn / Yasuo.tscn
 │   └── chaser_enemy.tscn / ranged_enemy.tscn
 ├── scripts/             # 脚本逻辑
+│   ├── shop_ui.gd       # LOL 风格商店界面
+│   ├── player_inventory.gd  # 玩家背包、金币、装备
+│   └── ...
 ├── shaders/
 ├── tools/               # generate_ezreal_sfx.py
 └── screenshots/         # 截图（README 用）
@@ -131,3 +141,9 @@ LOL_Rogue/
 ## 📄 License | 许可证
 
 本项目仅供学习与个人使用。各素材版权归属原作者，二次分发请遵守其许可条款。
+
+---
+
+## 🛠️ Development | 开发说明
+
+本项目在开发过程中借助 [Cursor](https://cursor.com) 辅助编程。

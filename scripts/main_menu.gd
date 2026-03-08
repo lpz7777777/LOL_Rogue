@@ -107,12 +107,14 @@ func _create_button(text: String, callback: Callable, is_highlight: bool = false
 func _on_singleplayer_pressed() -> void:
 	Global.set_singleplayer_mode()
 	Global.reset_game_stats()
+	PlayerInventory.reset()
 	SceneManager.go_to_hero_select()
 
 
 func _on_practice_pressed() -> void:
 	Global.set_practice_mode()
 	Global.reset_game_stats()
+	PlayerInventory.reset()
 	SceneManager.go_to_hero_select()
 
 

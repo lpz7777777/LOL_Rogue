@@ -49,7 +49,7 @@ var skill_manager: Node = null
 @export_group("UI Config")
 @export var skill_slot_size: Vector2 = Vector2(192, 192)
 @export var slot_spacing: int = 18
-@export var bottom_margin: int = 50
+@export var bottom_margin: int = 12
 @export var background_color: Color = Color(0.15, 0.15, 0.2, 0.9)
 @export var border_color: Color = Color(0.4, 0.35, 0.25, 1.0)
 @export var cooldown_mask_color: Color = Color(0, 0, 0, 0.7)
@@ -89,6 +89,12 @@ var _levelup_cards: Array = []
 var _is_showing_levelup: bool = false
 var _pause_overlay: Control = null
 var _is_pause_menu: bool = false
+
+# 金币与装备
+var _gold_label: Label = null
+var _equipment_slot_panels: Array[Panel] = []
+var _shop_overlay: Control = null
+var _is_shop_open: bool = false
 
 # 计时与游戏结束
 var _game_start_time: float = 0.0
@@ -134,10 +140,22 @@ func _ready() -> void:
 	_find_skill_manager()
 
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ESCAPE and _is_shop_open:
+			_close_shop()
+			get_viewport().set_input_as_handled()
+
 func _process(_delta: float) -> void:
 	if _is_game_over:
 		return
+	if Input.is_action_just_pressed("shop_toggle") and not _is_pause_menu:
+		if _is_shop_open:
+			_close_shop()
+		else:
+			_open_shop()
 	_update_timer_display()
+	_update_gold_display()
 	_update_cooldown_display()
 	_update_stats_display()
 	_update_hud_health_bar()
@@ -209,11 +227,12 @@ func _create_ui() -> void:
 	bottom_row.add_child(main_background)
 	
 	var main_vbox = VBoxContainer.new()
-	main_vbox.add_theme_constant_override("separation", 4)
+	main_vbox.add_theme_constant_override("separation", 0)
 	main_background.add_child(main_vbox)
 	
 	_main_container = HBoxContainer.new()
 	_main_container.add_theme_constant_override("separation", 20)
+	_main_container.alignment = BoxContainer.ALIGNMENT_END
 	main_vbox.add_child(_main_container)
 	
 	var stats_panel = _create_stats_panel()
@@ -242,6 +261,7 @@ func _create_ui() -> void:
 	add_child(center_container)
 	_create_level_circle()
 	_create_pause_overlay()
+	_create_shop_overlay()
 	_create_game_over_overlay()
 
 
@@ -258,7 +278,7 @@ func _create_main_background_style() -> StyleBoxFlat:
 	style.content_margin_left = 10
 	style.content_margin_right = 10
 	style.content_margin_top = 4
-	style.content_margin_bottom = 4
+	style.content_margin_bottom = 0
 	style.shadow_color = Color(0, 0, 0, 0.6)
 	style.shadow_size = 12
 	style.shadow_offset = Vector2(0, -6)
@@ -405,7 +425,11 @@ func _create_background_style() -> StyleBoxFlat:
 
 func _create_equipment_bar() -> Control:
 	var margin = 4
-	var panel_h = skill_slot_size.y  # 与技能栏行高一致，grid 填满无空白
+	var panel_h = skill_slot_size.y  # 与技能栏行高一致
+	var wrapper = HBoxContainer.new()
+	wrapper.add_theme_constant_override("separation", 8)
+	wrapper.custom_minimum_size.y = panel_h
+	
 	var panel = PanelContainer.new()
 	panel.custom_minimum_size = Vector2(
 		equipment_slot_size.x * 3 + equipment_slot_spacing * 2 + margin * 2,
@@ -428,6 +452,7 @@ func _create_equipment_bar() -> Control:
 	grid.add_theme_constant_override("v_separation", equipment_slot_spacing)
 	panel.add_child(grid)
 
+	_equipment_slot_panels.clear()
 	for i in range(6):
 		var slot = Panel.new()
 		slot.custom_minimum_size = equipment_slot_size
@@ -439,8 +464,31 @@ func _create_equipment_bar() -> Control:
 		slot.add_theme_stylebox_override("panel", slot_style)
 		slot.mouse_filter = Control.MOUSE_FILTER_STOP
 		grid.add_child(slot)
+		_equipment_slot_panels.append(slot)
 
-	return panel
+	wrapper.add_child(panel)
+	
+	# 金币显示（装备框右侧），保持总高度与技能栏一致
+	var gold_col = VBoxContainer.new()
+	gold_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	gold_col.add_theme_constant_override("separation", 4)
+	var gold_icon = _create_gold_icon()
+	gold_col.add_child(gold_icon)
+	_gold_label = Label.new()
+	_gold_label.text = "0"
+	_gold_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_gold_label.add_theme_font_size_override("font_size", 22)
+	_gold_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2, 1.0))
+	_gold_label.add_theme_color_override("font_outline_color", Color(0.2, 0.15, 0.05, 1.0))
+	_gold_label.add_theme_constant_override("outline_size", 2)
+	gold_col.add_child(_gold_label)
+	wrapper.add_child(gold_col)
+	
+	_update_gold_display()
+	PlayerInventory.gold_changed.connect(_on_gold_changed)
+	PlayerInventory.equipment_changed.connect(_on_equipment_changed)
+
+	return wrapper
 
 
 func _create_skill_slots(container: HBoxContainer) -> void:
@@ -591,6 +639,63 @@ func _update_cooldown_display() -> void:
 			mask.value = 0.0
 
 
+func _create_gold_icon() -> Control:
+	var icon = Panel.new()
+	icon.custom_minimum_size = Vector2(24, 24)
+	var s = StyleBoxFlat.new()
+	s.bg_color = Color(0.95, 0.78, 0.15, 1.0)
+	s.border_color = Color(0.85, 0.65, 0.1, 1.0)
+	s.set_border_width_all(1)
+	s.set_corner_radius_all(12)
+	icon.add_theme_stylebox_override("panel", s)
+	return icon
+
+
+func _update_gold_display() -> void:
+	if _gold_label:
+		_gold_label.text = "%d" % PlayerInventory.gold
+
+
+func _on_gold_changed(_new_amount: int) -> void:
+	_update_gold_display()
+
+
+func _on_equipment_changed(_slot_index: int, _item_id: StringName) -> void:
+	_refresh_equipment_slot_display()
+
+
+func _refresh_equipment_slot_display() -> void:
+	for i in range(mini(_equipment_slot_panels.size(), PlayerInventory.SLOT_COUNT)):
+		var slot = _equipment_slot_panels[i]
+		for c in slot.get_children():
+			c.queue_free()
+		var item_id = PlayerInventory.get_equipped_item(i)
+		if item_id != &"":
+			var def = PlayerInventory.get_item_def(item_id)
+			var icon_name: String = str(def.get("icon", ""))
+			var icon_path = "res://assets/shop/" + icon_name
+			var texture = ResourceLoader.load(icon_path, "Texture2D") as Texture2D
+			if texture != null:
+				var tex_rect = TextureRect.new()
+				tex_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				tex_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				tex_rect.texture = texture
+				tex_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+				slot.add_child(tex_rect)
+			else:
+				var lbl = Label.new()
+				lbl.text = def.get("name", "?")
+				lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+				lbl.add_theme_font_size_override("font_size", 14)
+				lbl.add_theme_color_override("font_color", Color(1.0, 0.9, 0.6, 1.0))
+				lbl.add_theme_color_override("font_outline_color", Color.BLACK)
+				lbl.add_theme_constant_override("outline_size", 1)
+				slot.add_child(lbl)
+				lbl.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+
 func _update_stats_display() -> void:
 	if skill_manager == null:
 		_find_skill_manager()
@@ -598,11 +703,13 @@ func _update_stats_display() -> void:
 			return
 	
 	if _ad_label:
-		_ad_label.text = "%.0f" % skill_manager.aa_damage
+		var ad_val = skill_manager.aa_damage + PlayerInventory.get_bonus_ad()
+		_ad_label.text = "%.0f" % ad_val
 	
 	if _ap_label:
 		if skill_manager.get_class() == "EzrealSkillManager":
-			_ap_label.text = "%.0f" % skill_manager.ap
+			var ap_val = skill_manager.ap + PlayerInventory.get_bonus_ap()
+			_ap_label.text = "%.0f" % ap_val
 		else:
 			_ap_label.text = "0"
 	
@@ -611,11 +718,9 @@ func _update_stats_display() -> void:
 		_as_label.text = "%.2f" % attack_speed
 	
 	if _ah_label:
-		# 只显示全局技能极速 (percent)
-		if skill_manager.get("ability_haste") != null:
-			_ah_label.text = "%.0f%%" % skill_manager.ability_haste
-		else:
-			_ah_label.text = "0"
+		var base_ah = skill_manager.get("ability_haste") if skill_manager.get("ability_haste") != null else 0.0
+		var total_ah = base_ah + PlayerInventory.get_bonus_ability_haste()
+		_ah_label.text = "%.0f%%" % total_ah
 
 
 func _create_hud_health_bar() -> Control:
@@ -803,6 +908,38 @@ func _create_game_over_overlay() -> void:
 	add_child(_game_over_overlay)
 
 
+func _create_shop_overlay() -> void:
+	_shop_overlay = Control.new()
+	_shop_overlay.name = "ShopOverlay"
+	_shop_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_shop_overlay.set_offsets_preset(Control.PRESET_FULL_RECT)
+	_shop_overlay.visible = false
+	_shop_overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	_shop_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	var shop_ui = preload("res://scripts/shop_ui.gd").new()
+	shop_ui.set_anchors_preset(Control.PRESET_FULL_RECT)
+	shop_ui.set_offsets_preset(Control.PRESET_FULL_RECT)
+	shop_ui.closed.connect(_close_shop)
+	_shop_overlay.add_child(shop_ui)
+	add_child(_shop_overlay)
+
+
+func _open_shop() -> void:
+	if _shop_overlay == null or _is_shop_open:
+		return
+	_is_shop_open = true
+	get_tree().paused = true
+	_shop_overlay.visible = true
+
+
+func _close_shop() -> void:
+	if _shop_overlay == null or not _is_shop_open:
+		return
+	_is_shop_open = false
+	get_tree().paused = false
+	_shop_overlay.visible = false
+
+
 func show_game_over() -> void:
 	if _is_game_over:
 		return
@@ -845,11 +982,12 @@ func _update_hud_health_bar() -> void:
 		return
 
 	var cur_hp = _player.get("current_health")
-	var max_hp = _player.get("max_health")
-	if cur_hp == null or max_hp == null:
+	var base_max = _player.get("max_health")
+	if cur_hp == null or base_max == null:
 		return
+	var max_hp = float(base_max) + PlayerInventory.get_bonus_max_health()
 
-	var pct = clamp(float(cur_hp) / float(max_hp), 0.0, 1.0)
+	var pct = clamp(float(cur_hp) / max_hp, 0.0, 1.0)
 	var margin = 4.0
 	var total_w = _hud_hp_wrapper.size.x - margin * 2
 	var total_h = _hud_hp_wrapper.size.y - margin * 2

@@ -46,8 +46,12 @@ var w_ability_haste: float = 0.0
 var e_ability_haste: float = 0.0
 var r_ability_haste: float = 0.0
 
+func _get_effective_ad() -> float:
+	return aa_damage + PlayerInventory.get_bonus_ad()
+
 func _get_effective_cooldown(base: float, skill_haste: float) -> float:
-	return base / (1.0 + (skill_haste + ability_haste) / 100.0)
+	var total_haste = ability_haste + PlayerInventory.get_bonus_ability_haste()
+	return base / (1.0 + (skill_haste + total_haste) / 100.0)
 
 var _aa_timer: float = 0.0
 var _q_timer: float = 0.0
@@ -141,7 +145,7 @@ func _cast_auto_attack() -> void:
 	
 	for enemy in hit_enemies:
 		if enemy.has_method("take_damage"):
-			enemy.take_damage(aa_damage)
+			enemy.take_damage(_get_effective_ad())
 	
 	_create_slash_effect(player.global_position, facing_direction, aa_range, Color(0.8, 0.8, 0.8, 0.6))
 	print("Yasuo AA slash hit ", hit_enemies.size(), " enemies")
@@ -163,9 +167,10 @@ func cast_q(target_direction: Vector3) -> bool:
 	else:
 		# 普通刺击也建议改为朝向鼠标方向，提升手感
 		var hit_enemies = _get_enemies_in_cone(player.global_position, direction, q_range, q_cone_angle)
+		var q_dmg = q_damage + PlayerInventory.get_bonus_ad() * 0.5  # Q 混合加成
 		for enemy in hit_enemies:
 			if enemy.has_method("take_damage"):
-				enemy.take_damage(q_damage)
+				enemy.take_damage(q_dmg)
 		_create_slash_effect(player.global_position, direction, q_range, Color(0.7, 0.9, 1.0, 0.8))
 	
 	_q_timer = _get_effective_cooldown(q_cooldown, q_ability_haste)
@@ -181,7 +186,8 @@ func _cast_tornado(direction: Vector3) -> void:
 	
 	# 3. 设置好位置后，最后执行 setup
 	tornado.global_position = player.global_position + Vector3(0, 1, 0)
-	tornado.setup(direction, tornado_damage, tornado_speed, tornado_range, knockup_duration, player)
+	var torn_dmg = tornado_damage + PlayerInventory.get_bonus_ad() * 0.6
+	tornado.setup(direction, torn_dmg, tornado_speed, tornado_range, knockup_duration, player)
 	
 	_create_slash_effect(player.global_position, direction, q_range, Color(0.5, 0.8, 1.0, 1.0))
 
@@ -305,7 +311,7 @@ func cast_e(target_position: Vector3) -> bool:
 	
 	for enemy in enemies_hit:
 		if enemy.has_method("take_damage"):
-			enemy.take_damage(e_damage)
+			enemy.take_damage(e_damage + PlayerInventory.get_bonus_ad() * 0.5)
 			print("Yasuo E dashed through enemy: ", enemy.name)
 	
 	_e_timer = _get_effective_cooldown(e_cooldown, e_ability_haste)
@@ -348,7 +354,7 @@ func cast_r() -> bool:
 		if not is_instance_valid(enemy):
 			continue
 		if enemy.has_method("take_damage"):
-			enemy.take_damage(r_damage)
+			enemy.take_damage(r_damage + PlayerInventory.get_bonus_ad() * 1.0)
 		print("Yasuo R hit airborne enemy: ", enemy.name)
 	
 	_airborne_enemies.clear()

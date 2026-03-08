@@ -49,10 +49,14 @@ var e_ability_haste: float = 0.0
 var r_ability_haste: float = 0.0
 
 func _get_effective_cooldown(base: float, skill_haste: float) -> float:
-	return base / (1.0 + (skill_haste + ability_haste) / 100.0)
+	var total_haste = ability_haste + PlayerInventory.get_bonus_ability_haste()
+	return base / (1.0 + (skill_haste + total_haste) / 100.0)
 
 func _ad() -> float:
-	return aa_damage
+	return aa_damage + PlayerInventory.get_bonus_ad()
+
+func _ap() -> float:
+	return ap + PlayerInventory.get_bonus_ap()
 
 ## 技能 AD/AP 加成比例，参考 LOL 伊泽瑞尔
 const Q_AD_RATIO: float = 1.2    # Q 主 AD
@@ -77,8 +81,8 @@ const SFX_E_BOLT: String = "res://assets/Ezreal/skill/sfx/e_bolt.wav"
 const SFX_R_FIRE: String = "res://assets/Ezreal/skill/sfx/r_fire.wav"
 
 func _get_skill_damage(base: float, ad_ratio: float, ap_ratio: float) -> float:
-	"""基础伤害 + AD加成 + AP加成，AD 使用 aa_damage"""
-	return base + ad_ratio * aa_damage + ap_ratio * ap
+	"""基础伤害 + AD加成 + AP加成，包含装备加成"""
+	return base + ad_ratio * _ad() + ap_ratio * _ap()
 
 var _aa_timer: float = 0.0
 var _skill_interval_timer: float = 0.0  # 上次释放技能/平A后的公共间隔
@@ -519,7 +523,7 @@ func _spawn_projectile(
 
 func _create_projectile_by_type(projectile_type: String) -> Area3D:
 	var projectile = Area3D.new()
-	projectile.name = "Projectile"
+	projectile.name = "EzrealProjectile"
 
 	var collision = CollisionShape3D.new()
 	collision.name = "CollisionShape3D"
@@ -796,7 +800,7 @@ func _create_projectile_by_type(projectile_type: String) -> Area3D:
 	projectile.add_child(collision)
 	projectile.add_child(visual)
 
-	var script = load("res://scripts/projectile.gd")
+	var script = load("res://scripts/ezreal_projectile.gd")
 	if script:
 		projectile.set_script(script)
 

@@ -634,7 +634,8 @@ func add_experience(amount: float) -> void:
 func _level_up() -> void:
 	level += 1
 	max_health += 50.0
-	current_health = min(current_health + 50.0, max_health)
+	var effective_max = max_health + PlayerInventory.get_bonus_max_health()
+	current_health = min(current_health + 50.0, effective_max)
 	_update_hero_health_bar()
 	_pending_levelups += 1
 	print("Ezreal 升级到 Lv.", level, " 最大生命值: ", max_health)

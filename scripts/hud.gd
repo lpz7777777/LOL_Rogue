@@ -153,8 +153,6 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if _is_game_over:
 		return
-	if Input.is_action_just_pressed("pause") and not _is_shop_open and not _is_showing_levelup and not _skip_pause_frame:
-		_toggle_pause()
 	if _skip_pause_frame:
 		_skip_pause_frame = false
 	if Input.is_action_just_pressed("shop_toggle") and not _is_pause_menu:

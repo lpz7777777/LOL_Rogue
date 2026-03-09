@@ -29,6 +29,8 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
+	if not get_parent().visible:
+		return
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_ESCAPE or event.keycode == KEY_P:
 			closed.emit()

@@ -95,6 +95,7 @@ var _gold_label: Label = null
 var _equipment_slot_panels: Array[Panel] = []
 var _shop_overlay: Control = null
 var _is_shop_open: bool = false
+var _skip_pause_frame: bool = false
 
 # 计时与游戏结束
 var _game_start_time: float = 0.0
@@ -152,8 +153,10 @@ func _input(event: InputEvent) -> void:
 func _process(_delta: float) -> void:
 	if _is_game_over:
 		return
-	if Input.is_action_just_pressed("pause") and not _is_shop_open and not _is_showing_levelup:
+	if Input.is_action_just_pressed("pause") and not _is_shop_open and not _is_showing_levelup and not _skip_pause_frame:
 		_toggle_pause()
+	if _skip_pause_frame:
+		_skip_pause_frame = false
 	if Input.is_action_just_pressed("shop_toggle") and not _is_pause_menu:
 		if _is_shop_open:
 			_close_shop()
@@ -941,6 +944,7 @@ func _close_shop() -> void:
 	if _shop_overlay == null or not _is_shop_open:
 		return
 	_is_shop_open = false
+	_skip_pause_frame = true
 	get_tree().paused = false
 	_shop_overlay.visible = false
 
@@ -1009,7 +1013,7 @@ func _create_pause_overlay() -> void:
 	_pause_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_pause_overlay.set_offsets_preset(Control.PRESET_FULL_RECT)
 	_pause_overlay.visible = false
-	_pause_overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	_pause_overlay.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	_pause_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 
 	var bg = ColorRect.new()
@@ -1052,16 +1056,21 @@ func _create_pause_overlay() -> void:
 	btn_hover.bg_color = Color(0.35, 0.3, 0.22, 0.98)
 	resume_btn.add_theme_stylebox_override("hover", btn_hover)
 	resume_btn.pressed.connect(_toggle_pause)
+	var esc_shortcut = Shortcut.new()
+	var esc_ev = InputEventKey.new()
+	esc_ev.keycode = KEY_ESCAPE
+	esc_shortcut.events = [esc_ev]
+	resume_btn.shortcut = esc_shortcut
 	vbox.add_child(resume_btn)
 
-	add_child(_pause_overlay)
-
-	# Esc 监听：用 ALWAYS 模式节点保证暂停时也能响应
+	# Esc 监听：WHEN_PAUSED 保证暂停时能响应（配合 overlay 的 process_mode）
 	var esc_handler = Node.new()
 	esc_handler.name = "PauseEscHandler"
-	esc_handler.process_mode = Node.PROCESS_MODE_ALWAYS
+	esc_handler.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 	esc_handler.set_script(load("res://scripts/pause_esc_handler.gd") as GDScript)
-	add_child(esc_handler)
+	_pause_overlay.add_child(esc_handler)
+
+	add_child(_pause_overlay)
 
 
 func _update_exp_ring() -> void:

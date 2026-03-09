@@ -142,13 +142,18 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE and _is_shop_open:
-			_close_shop()
+		if event.keycode == KEY_ESCAPE:
+			if _is_shop_open:
+				_close_shop()
+			elif not _is_showing_levelup:
+				_toggle_pause()
 			get_viewport().set_input_as_handled()
 
 func _process(_delta: float) -> void:
 	if _is_game_over:
 		return
+	if Input.is_action_just_pressed("pause") and not _is_shop_open and not _is_showing_levelup:
+		_toggle_pause()
 	if Input.is_action_just_pressed("shop_toggle") and not _is_pause_menu:
 		if _is_shop_open:
 			_close_shop()

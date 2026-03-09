@@ -1,4 +1,4 @@
-extends Node3D
+﻿extends Node3D
 class_name EzrealSkillManager
 
 @export var player: CharacterBody3D
@@ -15,13 +15,13 @@ class_name EzrealSkillManager
 
 @export_group("Q Skill - Mystic Shot")
 @export var q_damage: float = 25.0
-@export var q_speed: float = 35.0
+@export var q_speed: float = 50.0
 @export var q_cooldown: float = 1.2
 @export var q_range: float = 15.0
 
 @export_group("W Skill - Essence Flux")
 @export var w_damage: float = 20.0
-@export var w_speed: float = 20.0
+@export var w_speed: float = 50.0
 @export var w_cooldown: float = 2.0
 @export var w_range: float = 12.0
 @export var w_aoe_radius: float = 6.0
@@ -76,8 +76,7 @@ const SFX_Q_FIRE: String = "res://assets/Ezreal/skill/sfx/q_fire.wav"
 const SFX_Q_HIT: String = "res://assets/Ezreal/skill/sfx/q_hit.wav"
 const SFX_W_FIRE: String = "res://assets/Ezreal/skill/sfx/w_fire.wav"
 const SFX_W_HIT: String = "res://assets/Ezreal/skill/sfx/w_hit.wav"
-const SFX_E_BLINK: String = "res://assets/Ezreal/skill/sfx/e_blink.wav"
-const SFX_E_BOLT: String = "res://assets/Ezreal/skill/sfx/e_bolt.wav"
+const SFX_E_FIRE: String = "res://assets/Ezreal/skill/sfx/e_fire.wav"
 const SFX_R_FIRE: String = "res://assets/Ezreal/skill/sfx/r_fire.wav"
 
 func _get_skill_damage(base: float, ad_ratio: float, ap_ratio: float) -> float:
@@ -354,7 +353,7 @@ func cast_e(target_position: Vector3) -> void:
 		player.rotation.y = atan2(direction.x, direction.z)
 	
 	player.stop_moving()
-	_play_sfx(SFX_E_BLINK)
+	_play_sfx(SFX_E_FIRE)
 	if player.has_method("play_skill_animation"):
 		player.play_skill_animation("ezreal_spell3_180_anm")
 	
@@ -373,7 +372,6 @@ func cast_e(target_position: Vector3) -> void:
 	if player.has_method("play_skill_animation"):
 		player.play_skill_animation("ezreal_spell3_exit_anm")
 	
-	_play_sfx(SFX_E_BOLT)
 	var e_dmg = _get_skill_damage(e_damage, E_AD_RATIO, E_AP_RATIO)
 	var nearest_enemy = _get_nearest_enemy_global(new_position, aa_range)
 	if nearest_enemy and is_instance_valid(nearest_enemy):

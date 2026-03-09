@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://df5ykkyme58wr"
+path="res://.godot/imported/5. Dread March .mp3-adf16086c88c2e06fc643f33507475d7.mp3str"
+
+[deps]
+
+source_file="res://assets/BGM/fight/5. Dread March .mp3"
+dest_files=["res://.godot/imported/5. Dread March .mp3-adf16086c88c2e06fc643f33507475d7.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

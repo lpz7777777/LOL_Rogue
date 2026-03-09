@@ -1,7 +1,38 @@
 extends Node3D
 
+const BGM_FIGHT_DIR: String = "res://assets/BGM/fight/"
+
 func _ready() -> void:
+	_start_bgm()
 	_spawn_hero()
+
+
+func _start_bgm() -> void:
+	var dir = DirAccess.open(BGM_FIGHT_DIR)
+	if dir == null:
+		return
+	var mp3_files: PackedStringArray = []
+	dir.list_dir_begin()
+	var file = dir.get_next()
+	while file != "":
+		if file.ends_with(".mp3"):
+			mp3_files.append(BGM_FIGHT_DIR + file)
+		file = dir.get_next()
+	dir.list_dir_end()
+	if mp3_files.is_empty():
+		return
+	var chosen = mp3_files[randi() % mp3_files.size()]
+	var stream = load(chosen) as AudioStream
+	if stream == null:
+		return
+	var player = AudioStreamPlayer.new()
+	player.stream = stream
+	player.bus = "Master"
+	player.volume_db = -8.0
+	player.autoplay = true
+	player.process_mode = Node.PROCESS_MODE_ALWAYS
+	player.finished.connect(func(): player.play())
+	add_child(player)
 
 func _spawn_hero() -> void:
 	var hero_scene: PackedScene = null

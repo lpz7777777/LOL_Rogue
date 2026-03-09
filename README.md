@@ -134,7 +134,8 @@ LOL_Rogue/
 | Ezreal | 英雄 | [Sketchfab - skfb.ly/oHAQD](https://skfb.ly/oHAQD) |
 | Alistar（牛头） | 近战敌人 | [Sketchfab - skfb.ly/oHxvp](https://skfb.ly/oHxvp) |
 | Jhin（烬） | 远程敌人 | [Sketchfab - skfb.ly/oHGnn](https://skfb.ly/oHGnn) |
-| Boomerang | 海克斯回旋镖 | `assets/levelup/hex/boomerang_freefire.glb` |
+| Boomerang（回旋镖） | 海克斯回旋镖 | [Sketchfab - skfb.ly/onsJp](https://skfb.ly/onsJp) |
+| BGM | 战斗背景音乐 | [Free 6 Dark Fantasy Boss Battle Tracks - alkakrab](https://alkakrab.itch.io/6-dark-fantasy-boss-battle-tracks) |
 
 ---
 

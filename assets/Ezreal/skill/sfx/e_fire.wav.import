@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://utfimrnis7cy"
-path="res://.godot/imported/e_blink.wav-367bb5555be6abb5be63e5eb15aea381.sample"
+uid="uid://dc1b061bp0bqy"
+path="res://.godot/imported/e_fire.wav-eaa90b1005451171e16cb643418fa6e3.sample"
 
 [deps]
 
-source_file="res://assets/Ezreal/skill/sfx/e_blink.wav"
-dest_files=["res://.godot/imported/e_blink.wav-367bb5555be6abb5be63e5eb15aea381.sample"]
+source_file="res://assets/Ezreal/skill/sfx/e_fire.wav"
+dest_files=["res://.godot/imported/e_fire.wav-eaa90b1005451171e16cb643418fa6e3.sample"]
 
 [params]
 

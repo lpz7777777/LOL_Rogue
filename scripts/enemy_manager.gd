@@ -14,8 +14,8 @@ extends Node3D
 @export var enemy_speed: float = 3.0
 
 @export_group("Time Scaling")
-@export var health_per_minute: float = 0.15
-@export var damage_per_minute: float = 0.12
+@export var health_per_minute: float = 0.30
+@export var damage_per_minute: float = 0.25
 
 @export_group("Ranged Enemy")
 @export var ranged_spawn_chance: float = 0.15

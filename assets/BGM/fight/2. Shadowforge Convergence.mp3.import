@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bmp4uvyhh0ipu"
+path="res://.godot/imported/2. Shadowforge Convergence.mp3-208a583dbdbf8c860638a8ebaf9182b4.mp3str"
+
+[deps]
+
+source_file="res://assets/BGM/fight/2. Shadowforge Convergence.mp3"
+dest_files=["res://.godot/imported/2. Shadowforge Convergence.mp3-208a583dbdbf8c860638a8ebaf9182b4.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
